@@ -16,4 +16,19 @@ class Account extends Model
         'pictures',
         'location',
     ];
+
+    protected $casts = [
+        'age' => 'integer'
+    ];
+
+    public function likeCounter()
+    {
+        return $this->hasOne(LikeCounter::class, 'account_id', 'id');
+    }
+
+    public function scopeWithLikeCounts($query)
+    {
+        return $query->leftJoin('like_counters AS lc', 'accounts.id', '=', 'lc.account_id')
+            ->select('accounts.*', 'lc.like_count', 'lc.dislike_count');
+    }
 }
