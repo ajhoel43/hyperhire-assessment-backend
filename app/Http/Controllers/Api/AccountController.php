@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
 use App\Models\LikeCounter;
+use App\Models\LikeLog;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -37,6 +38,12 @@ class AccountController extends Controller
                 ]);
             }
 
+            // Log
+            LikeLog::create([
+                'account_id' => $accountId,
+                'action'     => 'like'
+            ]);
+
             // TODO: When an account has like > 50, send notification to admin
             return response()->json([
                 'message' => "Account with ID {$accountId} has been liked."
@@ -65,6 +72,12 @@ class AccountController extends Controller
                 ]);
             }
 
+            // Log
+            LikeLog::create([
+                'account_id' => $accountId,
+                'action'     => 'like'
+            ]);
+
             return response()->json([
                 'message' => "Account with ID {$accountId} has been disliked."
             ]);
@@ -78,8 +91,10 @@ class AccountController extends Controller
 
     public function getLikedAccounts(Request $request): JsonResponse
     {
+        $likedAccounts = Account::likedAccounts()->get();
         return response()->json([
-            'message' => "This is a placeholder response for liked accounts."
+            'message' => "This is a placeholder response for liked accounts.",
+            'peoples' => $likedAccounts
         ]);
     }
 }
