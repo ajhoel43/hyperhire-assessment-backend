@@ -15,4 +15,4 @@ Route::post('/people/{accountId}/like', [AccountController::class, 'postLikeAcco
 Route::post('/people/{accountId}/dislike', [AccountController::class, 'postDislikeAccount']);
 Route::get('/people/liked', [AccountController::class, 'getLikedAccounts']);
 
-Route::post('/simulate/like50', [SimulationController::class, 'postSimulateLike50']);
+Route::post('/simulate/likeReached', [SimulationController::class, 'postSimulateLike50']);
