@@ -6,18 +6,47 @@ use App\Http\Requests\SimulationRequest;
 use App\Mail\AccountCheckpointReachedMail;
 use App\Models\Account;
 use App\Models\LikeCounter;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class SimulationController extends Controller
 {
+    /**
+     * @OA\Post(
+     * path="/api/simulate/likeReached",
+     * tags={"Simulation"},
+     * summary="Simulate an account to reach 50 Likes, and sent notification into provided email",
+     * 
+     * @OA\RequestBody(
+     * description="Simulated Data",
+     * required=true,
+     * @OA\JsonContent(
+     * @OA\Property(property="accountId", type="integer", example=100),
+     * @OA\Property(property="targetEmail", type="string", example=L5_SWAGGER_CONST_TARGET)
+     * )
+     * ),
+     * 
+     * @OA\Response(
+     * response=200,
+     * description="Successful operation",
+     * @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="Simulation successfull, email has been sent to admin.")
+     * )
+     * ),
+     * @OA\Response(
+     * response=404,
+     * description="Fail operation",
+     * @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="Cannot simulate 50 likes right now."),
+     * @OA\Property(property="error", type="string", example="Some error occurred.")
+     * )
+     * )
+     * )
+     */
     public function postSimulateLike50(SimulationRequest $request)
     {
         try {
             $reqData = $request->all();
-            // dd($reqData);
-
             $account = Account::find($reqData['accountId']);
             if (!$account) {
                 throw new NotFoundHttpException("Account not found.");
@@ -38,7 +67,7 @@ class SimulationController extends Controller
             Mail::to($reqData['targetEmail'])->send(new AccountCheckpointReachedMail($account));
 
             return response()->json([
-                'message' => 'Simulation successfull, Email sent to admin.'
+                'message' => sprintf("Simulation successful, email has been sent to %s. Please also check your spam folder.", $reqData['targetEmail'])
             ]);
         } catch (\Exception $th) {
             return response()->json([

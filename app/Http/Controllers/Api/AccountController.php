@@ -10,32 +10,33 @@ use App\Models\LikeLog;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use OpenApi\Annotations as OA;
 
 /**
  * @OA\Schema(
- * schema="RecommendationItem",
- * title="Recommendation Item",
- * description="Struktur data tunggal Akun/People",
+ * schema="PeopleItem",
+ * title="People Data",
+ * description="Data Schema of People",
  * @OA\Property(property="id", type="integer", example=1),
  * @OA\Property(property="name", type="string", example="Kenton Hirthe"),
  * @OA\Property(property="email", type="string", format="email", example="k.hirthe@example.com"),
  * @OA\Property(property="age", type="integer", example=33),
- * @OA\Property(property="pictures", type="string", format="url", description="URL gambar profil atau array URL jika casting aktif"),
+ * @OA\Property(property="pictures", type="string", format="url", description="Profile Picture URL"),
  * @OA\Property(property="location", type="string", example="South Davin, Alaska"),
  * @OA\Property(property="created_at", type="string", format="date-time"),
  * @OA\Property(property="updated_at", type="string", format="date-time"),
- * @OA\Property(property="like_count", type="integer", nullable=true, description="Jumlah like (null jika tidak di-join)"),
- * @OA\Property(property="dislike_count", type="integer", nullable=true, description="Jumlah dislike (null jika tidak di-join)")
+ * @OA\Property(property="like_count", type="integer", nullable=true, description="Like Counter"),
+ * @OA\Property(property="dislike_count", type="integer", nullable=true, description="Dislike Counter")
  * )
  * 
  * @OA\Schema(
- * schema="RecommendationPaginated",
- * title="Recommendation Paginated",
- * description="Struktur pagination Laravel untuk People/Accounts",
+ * schema="PeoplePaginated",
+ * title="Peoples Data (Paginated)",
+ * description="Data Schema of Peoples (Paginated)",
  * @OA\Property(property="current_page", type="integer", example=1),
  * @OA\Property(property="current_page_url", type="string", format="url"),
  * @OA\Property(property="data", type="array", 
- * @OA\Items(ref="#/components/schemas/RecommendationItem")
+ * @OA\Items(ref="#/components/schemas/PeopleItem")
  * ),
  * @OA\Property(property="first_page_url", type="string", format="url"),
  * @OA\Property(property="from", type="integer", example=1),
@@ -45,14 +46,6 @@ use Illuminate\Support\Facades\Mail;
  * @OA\Property(property="prev_page_url", type="string", format="url", nullable=true),
  * @OA\Property(property="to", type="integer", example=10),
  * @OA\Property(property="total", type="integer", example=50)
- * )
- * 
- * @OA\Schema(
- * schema="RecommendationResponse",
- * title="Recommendation Response",
- * description="Response utama dari endpoint rekomendasi",
- * @OA\Property(property="message", type="string", example="This is a placeholder response for recommendations."),
- * @OA\Property(property="peoples", ref="#/components/schemas/RecommendationPaginated")
  * )
  */
 
@@ -70,13 +63,17 @@ class AccountController extends Controller
      * required=false,
      * @OA\Schema(type="integer", default=10)
      * ),
+     * 
      * @OA\Response(
      * response=200,
      * description="Successful operation",
-     * @OA\JsonContent(ref="#/components/schemas/RecommendationResponse")
+     * @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="This is a placeholder response for recommendations."),
+     * @OA\Property(property="peoples", ref="#/components/schemas/PeoplePaginated")
      * )
      * ),
      * @OA\Response(response=404, description="Fail operation")
+     * )
      * )
      */
     public function getRecommendations(Request $request): JsonResponse
@@ -90,6 +87,38 @@ class AccountController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Post(
+     * path="/api/people/{accountId}/like",
+     * tags={"Account"},
+     * summary="Like an Account",
+     * description="Increase like counter of account base on {accountId}, when counter has reach 50, it will send email to admin",
+     * 
+     * @OA\Parameter(
+     * name="accountId",
+     * in="path",
+     * description="ID of an account",
+     * required=true,
+     * @OA\Schema(type="integer", example=99)
+     * ),
+     * 
+     * @OA\Response(
+     * response=200,
+     * description="Successful operation",
+     * @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="Account with ID {$accountId} has been liked.")
+     * )
+     * ),
+     * @OA\Response(
+     * response=404,
+     * description="Fail operation",
+     * @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="Cannot like this account right now."),
+     * @OA\Property(property="error", type="string", example="Some error occurred.")
+     * )
+     * )
+     * )
+     */
     public function postLikeAccount(Request $request, $accountId): JsonResponse
     {
         try {
@@ -135,6 +164,36 @@ class AccountController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     * path="/api/people/{accountId}/dislike",
+     * tags={"Account"},
+     * summary="Dislike an Account",
+     * description="Increase dislike counter of account base on {accountId}",
+     * @OA\Parameter(
+     * name="accountId",
+     * in="path",
+     * description="ID of an account",
+     * required=true,
+     * @OA\Schema(type="integer", example=99)
+     * ),
+     * @OA\Response(
+     * response=200,
+     * description="Successful operation",
+     * @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="Account with ID {$accountId} has been disliked."),
+     * )
+     * ),
+     * @OA\Response(
+     * response=404,
+     * description="Fail operation",
+     * @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="Cannot dislike this account right now."),
+     * @OA\Property(property="error", type="string", example="Some error occurred.")
+     * )
+     * )
+     * )
+     */
     public function postDislikeAccount(Request $request, $accountId): JsonResponse
     {
         try {
@@ -159,7 +218,7 @@ class AccountController extends Controller
             // Log
             LikeLog::create([
                 'account_id' => $accountId,
-                'action'     => 'like'
+                'action'     => 'dislike'
             ]);
 
             return response()->json([
@@ -169,15 +228,39 @@ class AccountController extends Controller
             return response()->json([
                 'message' => 'Cannot Dislike this account right now.',
                 'error'   => $th->getMessage()
-            ]);
+            ], 404);
         }
     }
 
+    /**
+     * @OA\Get(
+     * path="/api/people/liked",
+     * tags={"Account"},
+     * summary="List all liked people + pagination",
+     * @OA\Parameter(
+     * name="limit",
+     * in="query",
+     * description="Number of data per page",
+     * required=false,
+     * @OA\Schema(type="integer", default=10)
+     * ),
+     * @OA\Response(
+     * response=200,
+     * description="Successful operation",
+     * @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="Liked Peoples."),
+     * @OA\Property(property="peoples", ref="#/components/schemas/PeoplePaginated")
+     * )
+     * ),
+     * @OA\Response(response=404, description="Fail operation")
+     * )
+     * )
+     */
     public function getLikedAccounts(Request $request): JsonResponse
     {
         $likedAccounts = Account::likedAccounts()->get();
         return response()->json([
-            'message' => "This is a placeholder response for liked accounts.",
+            'message' => "Liked Peoples.",
             'peoples' => $likedAccounts
         ]);
     }

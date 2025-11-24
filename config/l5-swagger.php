@@ -313,6 +313,7 @@ return [
          */
         'constants' => [
             'L5_SWAGGER_CONST_HOST' => env('SWAGGER_HOST_URL', 'http://my-default-host.com'),
+            'L5_SWAGGER_CONST_TARGET'   => env('MAIL_DUMMY_TARGET', 'dummy@ajulity.com')
         ],
     ],
 ];

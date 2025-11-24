@@ -1,0 +1,417 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Hyperhire Assessment API Documentation",
+        "description": "Base API for Hypehire Assessment",
+        "contact": {
+            "email": "support@ajulity.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Hyperhire Assessment API Server"
+        }
+    ],
+    "paths": {
+        "/api/people/recommendation": {
+            "get": {
+                "tags": [
+                    "Account"
+                ],
+                "summary": "List all recommended people + pagination",
+                "operationId": "c216c0098dbc653fa2ca35e9cbba412a",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of data per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "This is a placeholder response for recommendations."
+                                        },
+                                        "peoples": {
+                                            "$ref": "#/components/schemas/PeoplePaginated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Fail operation"
+                    }
+                }
+            }
+        },
+        "/api/people/{accountId}/like": {
+            "post": {
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Like an Account",
+                "description": "Increase like counter of account base on {accountId}, when counter has reach 50, it will send email to admin",
+                "operationId": "102d24002080e46014433c1bb81dab65",
+                "parameters": [
+                    {
+                        "name": "accountId",
+                        "in": "path",
+                        "description": "ID of an account",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 99
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Account with ID {$accountId} has been liked."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Fail operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Cannot like this account right now."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Some error occurred."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/people/{accountId}/dislike": {
+            "post": {
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Dislike an Account",
+                "description": "Increase dislike counter of account base on {accountId}",
+                "operationId": "cc7c753bfe6ff5e18aa20cb1f4dba974",
+                "parameters": [
+                    {
+                        "name": "accountId",
+                        "in": "path",
+                        "description": "ID of an account",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 99
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Account with ID {$accountId} has been disliked."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Fail operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Cannot dislike this account right now."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Some error occurred."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/people/liked": {
+            "get": {
+                "tags": [
+                    "Account"
+                ],
+                "summary": "List all liked people + pagination",
+                "operationId": "5a7cc8f92ff479545f71d4175fb915a4",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of data per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Liked Peoples."
+                                        },
+                                        "peoples": {
+                                            "$ref": "#/components/schemas/PeoplePaginated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Fail operation"
+                    }
+                }
+            }
+        },
+        "/api/simulate/likeReached": {
+            "post": {
+                "tags": [
+                    "Simulation"
+                ],
+                "summary": "Simulate an account to reach 50 Likes, and sent notification into provided email",
+                "operationId": "608c53cc593af324caea3865ff116adb",
+                "requestBody": {
+                    "description": "Simulated Data",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "accountId": {
+                                        "type": "integer",
+                                        "example": 100
+                                    },
+                                    "targetEmail": {
+                                        "type": "string",
+                                        "example": "dummy@ajulity.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Simulation successfull, email has been sent to admin."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Fail operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Cannot simulate 50 likes right now."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Some error occurred."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "PeopleItem": {
+                "title": "People Data",
+                "description": "Data Schema of People",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Kenton Hirthe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "k.hirthe@example.com"
+                    },
+                    "age": {
+                        "type": "integer",
+                        "example": 33
+                    },
+                    "pictures": {
+                        "description": "Profile Picture URL",
+                        "type": "string",
+                        "format": "url"
+                    },
+                    "location": {
+                        "type": "string",
+                        "example": "South Davin, Alaska"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "like_count": {
+                        "description": "Like Counter",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "dislike_count": {
+                        "description": "Dislike Counter",
+                        "type": "integer",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "PeoplePaginated": {
+                "title": "Peoples Data (Paginated)",
+                "description": "Data Schema of Peoples (Paginated)",
+                "properties": {
+                    "current_page": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "current_page_url": {
+                        "type": "string",
+                        "format": "url"
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PeopleItem"
+                        }
+                    },
+                    "first_page_url": {
+                        "type": "string",
+                        "format": "url"
+                    },
+                    "from": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "next_page_url": {
+                        "type": "string",
+                        "format": "url",
+                        "nullable": true
+                    },
+                    "path": {
+                        "type": "string",
+                        "format": "url"
+                    },
+                    "per_page": {
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "prev_page_url": {
+                        "type": "string",
+                        "format": "url",
+                        "nullable": true
+                    },
+                    "to": {
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "total": {
+                        "type": "integer",
+                        "example": 50
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Account",
+            "description": "Account"
+        },
+        {
+            "name": "Simulation",
+            "description": "Simulation"
+        }
+    ]
+}
