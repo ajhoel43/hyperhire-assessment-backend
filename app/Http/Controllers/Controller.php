@@ -14,7 +14,7 @@ use OpenApi\Annotations as OA;
  * )
  * 
  * @OA\Server(
- * url="https://demo-hyperhire.ajulity.com",
+ * url=L5_SWAGGER_CONST_HOST,
  * description="Hyperhire Assessment API Server"
  * )
  * 
