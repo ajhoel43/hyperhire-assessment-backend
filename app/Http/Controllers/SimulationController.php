@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class SimulationController extends Controller
 {
-    public function simulateLike50(SimulationRequest $request)
+    public function postSimulateLike50(SimulationRequest $request)
     {
         try {
             $reqData = $request->all();

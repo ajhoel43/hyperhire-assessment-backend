@@ -11,8 +11,8 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/people/recommendation', [AccountController::class, 'getRecommendations']);
-Route::post('/people/{accountId}/like', [AccountController::class, 'likeAccount']);
-Route::post('/people/{accountId}/dislike', [AccountController::class, 'dislikeAccount']);
+Route::post('/people/{accountId}/like', [AccountController::class, 'postLikeAccount']);
+Route::post('/people/{accountId}/dislike', [AccountController::class, 'postDislikeAccount']);
 Route::get('/people/liked', [AccountController::class, 'getLikedAccounts']);
 
-Route::post('/simulate/like50', [SimulationController::class, 'simulateLike50']);
+Route::post('/simulate/like50', [SimulationController::class, 'postSimulateLike50']);
